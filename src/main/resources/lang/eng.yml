@@ -1,108 +1,114 @@
-General:
-  CurrencySingular: "Coin" # Fallback if the plugin can't get the currency from vault.
-  CurrencyPlural: "Coins" # Fallback if the plugin can't get the currency from vault.
-  NoPermission: "%prefix% &cYou have no permission to do that."
-  PlayerNotFound: "%prefix% &cFailed to get the '&e%player%&c' player."
-  NotEnoughMoney: "%prefix% &cYou don't have enough money to buy this head."
-  BoughtHead: "%prefix% &aYou have bought the &e%head%&a head for &e%price% %currency_plural%&a."
-  ReceivedHead: "%prefix% &aYou have received the &e%head%&a head."
-Commands:
-  ConsoleCaller: "%prefix% &cYou must be a player to use this command."
-  UnknownError: "%prefix% &cUnknown error happened. Please report it."
-  Common:
-    InvalidPage: "%prefix% &cInvalid page number."
-  Help:
-    Desc: "Shows information about the commands."
-    Title: "&8&m        &r &bOpen&3Heads &7Help &8&m    &r &7Page &3%current_page%&7/&3%max_page% &8&m        &r"
-    Info: |-
+general:
+  # Fallback if the plugin can't get the currency from vault.
+  currency:
+    singular: "Coin"
+    plural: "Coins"
+  no-permission: "%prefix% &cYou have no permission to do that."
+  player-not-found: "%prefix% &cFailed to get the '&e%player%&c' player."
+  not-enough-money: "%prefix% &cYou don't have enough money to buy this head."
+  bought-head: "%prefix% &aYou have bought the &e%head%&a head for &e%price% %currency_plural%&a."
+  received-head: "%prefix% &aYou have received the &e%head%&a head."
+commands:
+  console-caller: "%prefix% &cYou must be a player to use this command."
+  unknown-error: "%prefix% &cUnknown error happened. Please report it."
+  common:
+    invalid-page: "%prefix% &cInvalid page number."
+    invalid-arguments: "%prefix% &cInvalid arguments."
+  help:
+    desc: "Shows information about the commands."
+    title: "&8&m         &r &bOpen&3Heads &7Help &8&m    &r &7Page &3%current_page%&7/&3%max_page% &8&m         &r"
+    info: |-
       &r
-      &r  &c&l[]&r &8- &7Required,   &e&l<>&r &8- &7Optional
+      &r  &c&l[]&r &8- &7Required,    &e&l<>&r &8- &7Optional
       &r
-    Line: "&r  &b/%command% %subcommand%&3%syntax% &8- &7%description%"
-    Bottom: |-
+    line: "&r  &b/%command% %subcommand%&3%syntax% &8- &7%description%"
+    bottom: |-
       &r
-      &8&m                       &r %previous_btn%&3%current_page%&7/&3%max_page%%next_btn% &8&m                       &r
-    PrevBtn: "&b<< "
-    NextBtn: " &b>>"
-  Version:
-    Desc: "Shows the plugin version."
-    Current: "%prefix% &aYou are using the '&3%version%&a' version of OpenHeads."
-    UpToDate: "%prefix% &aOpenHeads is up to date."
-    Outdated: "%prefix% &cOpenHeads is outdated. You can download it here: &e%link%"
-  Reload:
-    Desc: "Reloads the plugin config and its messages."
-    Done: "%prefix% &aThe plugin has been reloaded."
-  Gui:
-    Desc: "Opens the heads GUI."
-Categories:
-  Alphabet:
-    Name: "Alphabet"
-    Description: "Letters of the alphabet."
-  Animals:
-    Name: "Animals"
-    Description: "Various animals."
-  Blocks:
-    Name: "Blocks"
-    Description: "Blocks from the game."
-  Decoration:
-    Name: "Decoration"
-    Description: "Decorative blocks."
-  Food:
-    Name: "Food"
-    Description: "Various food and drink items."
-  Humanoids:
-    Name: "Humanoids"
-    Description: "Humanoid creatures."
-  Humans:
-    Name: "Humans"
-    Description: "Human characters."
-  Misc:
-    Name: "Misc"
-    Description: "Various items."
-  Mobs:
-    Name: "Mobs"
-    Description: "Hostile and passive mobs."
-  Plants:
-    Name: "Plants"
-    Description: "Various plants."
-GUI:
-  MainTitle: "&4> &1Heads Menu"
-  CategoryTitle: "&4> &1%category% Heads"
-  SearchTitle: "&4> Search: &1%search%"
-  FavoriteTitle: "&4> &1Favorites"
-  Cancel: "&cCancel"
-  Confirm: "&aConfirm"
-  Close: "&cClose"
-  Back: "&cBack"
-  PreviousPage: "&7Previous Page"
-  NextPage: "&7Next Page"
-  Page: "&7Page: &f%page%"
-  HeadFormat: "&c> &e%head%%favorite%"
-  HeadLore:
+      &8&m                        &r %previous_btn%&3%current_page%&7/&3%max_page%%next_btn% &8&m                        &r
+    prev-btn: "&b<< "
+    next-btn: " &b>>"
+  version:
+    desc: "Shows the plugin version."
+    current: "%prefix% &aYou are using the '&3%version%&a' version of YggraHeads."
+    up-to-date: "%prefix% &aYggraHeads is up to date."
+    outdated: "%prefix% &cYggraHeads is outdated. You can download it here: &e%link%"
+  reload:
+    desc: "Reloads the plugin config and its messages."
+    done: "%prefix% &aThe plugin has been reloaded."
+  gui:
+    desc: "Opens the heads GUI."
+categories:
+  alphabet:
+    name: "Alphabet"
+    description: "Letters of the alphabet."
+  animals:
+    name: "Animals"
+    description: "Various animals."
+  blocks:
+    name: "Blocks"
+    description: "Blocks from the game."
+  decoration:
+    name: "Decoration"
+    description: "Decorative blocks."
+  food:
+    name: "Food"
+    description: "Various food and drink items."
+  humanoids:
+    name: "Humanoids"
+    description: "Humanoid creatures."
+  humans:
+    name: "Humans"
+    description: "Human characters."
+  misc:
+    name: "Misc"
+    description: "Various items."
+  mobs:
+    name: "Mobs"
+    description: "Hostile and passive mobs."
+  plants:
+    name: "Plants"
+    description: "Various plants."
+gui:
+  main-title: "&4> &1Heads Menu"
+  category-title: "&4> &1%category% Heads"
+  search-title: "&4> Search: &1%search%"
+  favorite-title: "&4> &1Favorites"
+  search-start: "%prefix% &7Please enter the name of the head to search or type '&ccancel&7' to quit."
+  common:
+    cancel: "&cCancel"
+    confirm: "&aConfirm"
+    close: "&cClose"
+    back: "&cBack"
+    previous-page: "&7Previous Page"
+    next-page: "&7Next Page"
+    page: "&7Page: &f%page%"
+    search: "&6Search"
+    favorites: "&eFavorites"
+    free: "&afree"
+  head:
+    name: "&c> &e%head%%favorite%"
+    lore:
     - "&8%category%"
     - "&c> &eLeft-Click to get."
     - "&c> &eRight-Click to %favorite%."
-  CategoryName: "&c> &e%category%"
-  CategoryLore:
+  category:
+    name: "&c> &e%category%"
+    lore:
     - "&7Count: &f%count%"
     - "&7Price: &f%price% &7%currency_plural%"
     - ""
     - "&c> &eClick to open."
-  UnknownCategory: "&8Unknown"
-  Free: "&afree"
-  Search: "&6Search"
-  Favorites: "&eFavorites"
-  Favorite:
-    Add: "favorite"
-    Remove: "unfavorite"
-    YesText: " &4❤"
-    NoText: ""
-Sign:
-  Menu:
-    TopLine: "&b&m---------------"
-    MiddleLine: "&aSearch:"
-    BottomLine: "&b&m---------------"
+  favorite:
+    add: "favorite"
+    remove: "unfavorite"
+    yes-text: " &4<3"
+    no-text: ""
+sign:
+  menu:
+    top-line: "&b&m---------------"
+    middle-line: "&aSearch:"
+    bottom-line: "&b&m---------------"
 
 
 # DO NOT TOUCH THIS. This helps to handle config related changes after updates.
-FileVersion: 1
+file-version: 1
