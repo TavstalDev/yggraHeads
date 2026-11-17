@@ -23,8 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Command executor for the {@code /heads} command.
+ * <p>
+ * Handles opening the heads GUI and subcommands such as help, version, and reload.
+ */
 @SuppressWarnings("FieldCanBeLocal")
 public class CommandHeads implements CommandExecutor {
+    /** Base command label handled by this executor. */
     private final String baseCommand = "heads";
 
     /**
@@ -72,20 +78,20 @@ public class CommandHeads implements CommandExecutor {
                 }
                 case "version": {
                     Map<String, Object> parameters = new HashMap<>();
-                    // TODO
-                    parameters.put("version", "TODO");
+
+                    parameters.put("version", YggraHeads.instance.version());
                     chatService.sendLocalizedMsg(player, "commands.version.current", parameters);
 
-                    /*YggraHeads.instance.isUpToDate().thenAccept(upToDate -> {
-                        if (upToDate) {
-                            chatService.sendLocalizedMsg(player, "Commands.Version.UpToDate");
+                    YggraHeads.instance.isUpToDate().thenAccept(upToDate -> {
+                        if (upToDate == null || upToDate) {
+                            chatService.sendLocalizedMsg(player, "commands.version.up-to-date");
                         } else {
-                            chatService.sendLocalizedMsg(player, "Commands.Version.Outdated", Map.of("link", YggraHeads.instance.getDownloadUrl()));
+                            chatService.sendLocalizedMsg(player, "commands.version.outdated", MapUtil.of("link", YggraHeads.instance.downloadUrl()));
                         }
                     }).exceptionally(e -> {
-                        _logger.error("Failed to determine update status: " + e.getMessage());
+                        chatService.sendLocalizedMsg(player, "commands.version.exception");
                         return null;
-                    });*/
+                    });
                     return true;
                 }
                 case "reload": {
@@ -108,6 +114,7 @@ public class CommandHeads implements CommandExecutor {
         return true;
     }
     
+    /** Subcommand definitions used for help rendering and permission checks. */
     private final List<SubCommand> _subCommands = new ArrayList<SubCommand>() {
         {
             // HELP
@@ -133,6 +140,12 @@ public class CommandHeads implements CommandExecutor {
         }
     };
 
+    /**
+     * Sends a paginated help message for the {@code /heads} command.
+     *
+     * @param sender the command sender receiving the help output
+     * @param page   the requested help page (1-based)
+     */
     private void help(CommandSender sender, int page) {
         ITranslationService translator = YggraHeads.instance.getService(ITranslationService.class);
         IChatService chatService = YggraHeads.instance.getService(IChatService.class);
