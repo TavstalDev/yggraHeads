@@ -1,0 +1,273 @@
+package io.github.tavstaldev.yggraHeads;
+
+import io.github.tavstaldev.yggraHeads.commands.CommandHeads;
+import io.github.tavstaldev.yggraHeads.config.HeadsConfiguration;
+import io.github.tavstaldev.yggraHeads.config.models.RedisConfig;
+import io.github.tavstaldev.yggraHeads.database.MySqlDatabase;
+import io.github.tavstaldev.yggraHeads.database.PostgreDatabase;
+import io.github.tavstaldev.yggraHeads.database.SqLiteDatabase;
+import io.github.tavstaldev.yggraHeads.events.PlayerEventListener;
+import io.github.tavstaldev.yggraHeads.gui.CategoryGUI;
+import io.github.tavstaldev.yggraHeads.gui.HeadsGUI;
+import io.github.tavstaldev.yggraHeads.database.IHeadsDatabase;
+import io.github.tavstaldev.yggraHeads.utils.EconomyUtils;
+import io.github.tavstaldev.yggraHeads.utils.HeadUtils;
+import io.github.tavstaldev.yggraLib.api.cache.ICache;
+import io.github.tavstaldev.yggraLib.api.cache.impl.MemoryCache;
+import io.github.tavstaldev.yggraLib.api.cache.impl.RedisCache;
+import io.github.tavstaldev.yggraLib.api.localization.ITranslationService;
+import io.github.tavstaldev.yggraLib.bootstrap.YggraPlugin;
+import io.github.tavstaldev.yggraLib.bootstrap.models.LibraryInfo;
+import io.github.tavstaldev.yggraLib.bukkit.gui.GuiService;
+import io.github.tavstaldev.yggraLib.bukkit.utils.VersionUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
+import org.jetbrains.annotations.NotNull;
+
+public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
+    public static YggraHeads instance;
+
+    public YggraHeads() {
+        super(27765,
+                new String[]{
+                "https://oss.sonatype.org/content/groups/public/",
+                "https://repo.codemc.io/repository/maven-public/"
+        }, new LibraryInfo[]{
+            new LibraryInfo(
+                    "com{}zaxxer",
+                    "HikariCP",
+                    "4.0.3",
+                    null
+                    /*"com{}zaxxer",
+                    "io{}github{}}tavstaldev{}yggraHeads{}shadow{}hikari"*/
+            ),
+            new LibraryInfo(
+                    "org{}projectlombok",
+                    "lombok",
+                    "1.18.46",
+                    null
+                    /*"org{}projectlombok",
+                    "io{}github{}}tavstaldev{}yggraHeads{}shadow{}lombok"*/
+            ),
+            new LibraryInfo(
+                    "com{}github{}cryptomorin",
+                    "XSeries",
+                    "14.0.0",
+                    null
+                    /*"com{}github{}cryptomorin",
+                    "io{}github{}}tavstaldev{}yggraHeads{}shadow{}xseries"*/
+            )
+        });
+    }
+
+    @Override
+    public void onPrePluginEnable() {
+        instance = this;
+        _config = new HeadsConfiguration();
+        _config.load();
+    }
+
+    @Override
+    public void onPluginEnable() {
+        if (!VersionUtils.isAtLeast(1, 8)) {
+            _logger.error("The plugin is not compatible with legacy versions of Minecraft. Please use a newer version of the game.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        // Register Events
+        PlayerEventListener.init();
+
+        // Load Localizations
+        ITranslationService translator = getService(ITranslationService.class);
+        if (translator == null)
+        {
+            _logger.error("Failed to load localizations... Unloading...");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        // Register Economy
+        if (config().general.isUseEconomy()) {
+            _logger.debug("Hooking into Vault...");
+            if (EconomyUtils.setupEconomy())
+                _logger.info("Economy plugin found and hooked into Vault.");
+            else {
+                _logger.warn("Economy plugin not found. Unloading...");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
+        }
+
+        // Create cache
+        ICache cacheService;
+        RedisConfig redis = config().storage.getRedis();
+        if (redis.isEnabled()) {
+            cacheService = new RedisCache(
+                    redis.getHost(),
+                    redis.getPort(),
+                    redis.getUsername(),
+                    redis.getPassword()
+            );
+        } else {
+            cacheService = new MemoryCache(logger().withModule(MemoryCache.class));
+        }
+        _serviceCollection.put(ICache.class, cacheService);
+
+        // Create Database
+        IHeadsDatabase database;
+        String databaseType = config().storage.getType();
+        if (databaseType == null)
+            databaseType = "sqlite";
+        switch (databaseType.toLowerCase()) {
+            case "mysql":
+            case "mariadb": {
+                try
+                {
+                    database = new MySqlDatabase(this);
+                }
+                catch (Exception ex) {
+                    _logger.error("Failed to construct mysql/mariadb database. Unloading...", ex);
+                    Bukkit.getPluginManager().disablePlugin(this);
+                    return;
+                }
+                break;
+            }
+            case "postgre":
+            case "postgres":
+            case "postgresql": {
+                try {
+                    database = new PostgreDatabase(this);
+                }
+                catch (Exception ex) {
+                    _logger.error("Failed to construct postgres database. Unloading...", ex);
+                    Bukkit.getPluginManager().disablePlugin(this);
+                    return;
+                }
+                break;
+            }
+            case "sqlite":
+            default: {
+                try {
+                    database = new SqLiteDatabase(this);
+                }
+                catch (Exception ex) {
+                    _logger.error("Failed to construct sqlite database. Unloading...", ex);
+                    Bukkit.getPluginManager().disablePlugin(this);
+                    return;
+                }
+                break;
+            }
+        }
+        database.load();
+        database.checkSchema();
+        _serviceCollection.put(IHeadsDatabase.class, database);
+
+        // Register Head Config
+        _logger.debug("Loading config...");
+        HeadUtils.load();
+
+        GuiService guiService = new GuiService(this, cacheService);
+        _serviceCollection.put(GuiService.class, guiService);
+
+        // Register GUI
+        guiService.register(new CategoryGUI());
+        guiService.register(new HeadsGUI());
+
+        // Register Commands
+        _logger.debug("Registering commands...");
+        PluginCommand command = getCommand("heads");
+        if (command != null) {
+            command.setExecutor(new CommandHeads());
+        }
+
+        _logger.ok("Successfully loaded.");
+        if (config().general.isCheckForUpdates()) {
+            isUpToDate().thenAccept(upToDate -> {
+                if (upToDate == null)
+                    return;
+
+                if (upToDate) {
+                    _logger.ok("Plugin is up to date!");
+                    return;
+                }
+
+                _logger.warn("A new version of the plugin is available at: " + downloadUrl());
+            }).exceptionally(e -> {
+                _logger.error("Failed to determine update status: " + e.toString());
+                return null;
+            });
+        }
+    }
+
+    /**
+     * Called when the plugin is disabled.
+     */
+    public void onPluginDisable() {
+        IHeadsDatabase database = getService(IHeadsDatabase.class);
+        if (database != null)
+            database.unload();
+
+        // Unregister GUIs
+        GuiService guiService = getService(GuiService.class);
+        if (guiService != null) {
+            guiService.closeAll();
+            guiService.unregister(CategoryGUI.ID);
+            guiService.unregister(HeadsGUI.ID);
+            guiService.invalidateAllCaches();
+        }
+
+        _logger.info("Successfully unloaded.");
+    }
+
+
+    @Override
+    public String downloadUrl() {
+        return "https://github.com/TavstalDev/yggraHeads/releases";
+    }
+
+    @Override
+    public @NotNull String replacePlaceholders(@NotNull String message) {
+        String result = super.replacePlaceholders(message);
+        ITranslationService translator = getService(ITranslationService.class);
+        if (translator == null)
+            return result;
+
+        if (result.contains("%currency_singular%")) {
+            String currencySingular = EconomyUtils.currencyNameSingular();
+            result = result.replace("%currency_singular%",
+                    currencySingular == null ? translator.localize("general.currency.singular") : currencySingular);
+        }
+
+        if (result.contains("%currency_plural%")) {
+            String currencyPlural = EconomyUtils.currencyNamePlural();
+            result = result.replace("%currency_plural%",
+                    currencyPlural == null ? translator.localize("general.currency.plural") : currencyPlural);
+        }
+        return result;
+    }
+
+    public void reload() {
+        _logger.info("Reloading YggraHeads...");
+        _logger.debug("Reloading localizations...");
+        ITranslationService translator = getService(ITranslationService.class);
+        if (translator != null)
+            translator.refresh();
+        _logger.debug("Localizations reloaded.");
+        _logger.debug("Reloading configuration...");
+        _config.load();
+        _logger.debug("Configuration reloaded.");
+
+        // Re-register GUIs
+        GuiService guiService = getService(GuiService.class);
+        if (guiService != null) {
+            guiService.closeAll();
+            guiService.unregister(CategoryGUI.ID);
+            guiService.unregister(HeadsGUI.ID);
+            guiService.invalidateAllCaches();
+
+            guiService.register(new CategoryGUI());
+            guiService.register(new HeadsGUI());
+        }
+    }
+}

@@ -1,19 +1,19 @@
-package io.github.tavstaldev.openheads.models;
+package io.github.tavstaldev.yggraHeads.models;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
+import com.cryptomorin.xseries.XMaterial;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.github.tavstaldev.minecorelib.core.PluginLogger;
-import io.github.tavstaldev.minecorelib.utils.ChatUtils;
-import io.github.tavstaldev.minecorelib.utils.GuiUtils;
-import io.github.tavstaldev.openheads.OpenHeads;
-import io.github.tavstaldev.openheads.utils.EconomyUtils;
+import io.github.tavstaldev.yggraHeads.YggraHeads;
+import io.github.tavstaldev.yggraHeads.utils.EconomyUtils;
+import io.github.tavstaldev.yggraLib.api.localization.ITranslationService;
+import io.github.tavstaldev.yggraLib.api.logger.YggraLogger;
+import io.github.tavstaldev.yggraLib.bukkit.items.IItemStackAccessor;
+import io.github.tavstaldev.yggraLib.bukkit.items.metaAccessors.ISkullMetaAccessor;
+import io.github.tavstaldev.yggraLib.bukkit.utils.AdventureUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.FileReader;
@@ -84,7 +84,7 @@ public class HeadCategory {
     /**
      * The logger for the head category.
      */
-    private final PluginLogger _logger;
+    private final YggraLogger _logger;
 
     /**
      * The icon representing the head category.
@@ -113,7 +113,7 @@ public class HeadCategory {
         _file = file;
         Texture = texture;
         _heads = new ArrayList<>();
-        _logger = OpenHeads.Instance.getCustomLogger().withModule(String.format("%s Category", Name));
+        _logger = YggraHeads.instance.logger().withModule(String.format("%s Category", Name));
     }
 
     /**
@@ -123,7 +123,7 @@ public class HeadCategory {
      */
     public boolean copyFromResource() {
         InputStream inputStream;
-        Path dirPath = Paths.get(OpenHeads.Instance.getDataFolder().getPath(), "heads");
+        Path dirPath = Paths.get(YggraHeads.instance.getDataFolder().getPath(), "heads");
         Path filePath = Paths.get(dirPath.toString(), _file);
         if (!Files.exists(dirPath)) {
             try {
@@ -139,7 +139,7 @@ public class HeadCategory {
         if (!Files.exists(filePath)) {
             _logger.debug(String.format("Copying %s head file...", Name));
             try {
-                inputStream = OpenHeads.Instance.getResource("heads/" + _file);
+                inputStream = YggraHeads.instance.getResource("heads/" + _file);
                 if (inputStream == null) {
                     _logger.debug(String.format("Failed to get head data file for category '%s'.", Name));
                 } else
@@ -159,7 +159,7 @@ public class HeadCategory {
      * @return true if the data was successfully loaded, false otherwise
      */
     public boolean load() {
-        Path dirPath = Paths.get(OpenHeads.Instance.getDataFolder().getPath(), "heads");
+        Path dirPath = Paths.get(YggraHeads.instance.getDataFolder().getPath(), "heads");
         Path filePath = Paths.get(dirPath.toString(), _file);
         if (!Files.exists(filePath))
             return false;
@@ -182,15 +182,19 @@ public class HeadCategory {
      * @param player the player for whom the icon is being retrieved
      * @return the ItemStack representing the icon
      */
-    public ItemStack getIcon(Player player) {
+    public ItemStack getIcon(Player player, ITranslationService translator, IItemStackAccessor itemStackAccessor,
+                             ISkullMetaAccessor skullMetaAccessor) {
         if (_icon != null)
             return _icon;
 
+        UUID playerId = player.getUniqueId();
+        
         List<Component> loreList = new ArrayList<>();
-        String displayName = OpenHeads.Instance.localize(player, "GUI.CategoryName").replace("%category%", OpenHeads.Instance.localize(player, DisplayNameKey));
-        String description = OpenHeads.Instance.localize(player, DescriptionKey);
-        String freeText = OpenHeads.Instance.localize(player, "GUI.Free");
-        for (String rawLore : OpenHeads.Instance.localizeList(player, "GUI.CategoryLore")) {
+        Component displayName = AdventureUtils.parse(translator.localize(playerId, "gui.category.name")
+                .replace("%category%", translator.localize(playerId, DisplayNameKey)));
+        String description = translator.localize(playerId, DescriptionKey);
+        String freeText = translator.localize(playerId, "gui.common.free");
+        for (String rawLore : translator.localizeList(playerId, "gui.category.lore")) {
             String lore = rawLore
                     .replace("%price%", Price == 0 ? freeText : String.format("%.2f", Price))
                     .replace("%description%", description)
@@ -198,34 +202,38 @@ public class HeadCategory {
 
             if (lore.contains("%currency_singular%")) {
                 String currencySingular = EconomyUtils.currencyNameSingular();
-                lore = lore.replace("%currency_singular%", Price == 0 ? "" : currencySingular == null ? OpenHeads.Instance.localize("General.CurrencySingular") : currencySingular);
+                lore = lore.replace("%currency_singular%", Price == 0 ? "" : currencySingular == null ? translator.localize(playerId, "general.currency.singular") : currencySingular);
             }
             if (lore.contains("%currency_plural%")) {
                 String currencyPlural = EconomyUtils.currencyNamePlural();
-                lore = lore.replace("%currency_plural%", Price == 0 ? "" : currencyPlural == null ? OpenHeads.Instance.localize("General.CurrencyPlural") : currencyPlural);
+                lore = lore.replace("%currency_plural%", Price == 0 ? "" : currencyPlural == null ? translator.localize(playerId, "general.currency.plural") : currencyPlural);
             }
-            loreList.add(ChatUtils.translateColors(lore, true));
+            loreList.add(AdventureUtils.parse(lore, true));
         }
 
         try
         {
+            ItemStack result;
+
             if (Texture == null)
-                return GuiUtils.createItem(OpenHeads.Instance,Material.ZOMBIE_HEAD, displayName, loreList);
-            var result = GuiUtils.createItem(OpenHeads.Instance,Material.PLAYER_HEAD, displayName, loreList);
-            var meta = result.getItemMeta();
-            if (meta instanceof SkullMeta skullMeta) {
-                PlayerProfile profile = Bukkit.createProfile(UUID.fromString("bbde04e7-ccb9-49a8-8ad8-08d11b6540d4"));
-                profile.setProperty(new ProfileProperty("textures", Texture));
-                skullMeta.setPlayerProfile(profile);
-                result.setItemMeta(meta);
-            }
+                result = XMaterial.ZOMBIE_HEAD.parseItem();
+            else
+                result = XMaterial.PLAYER_HEAD.parseItem();
+
+            itemStackAccessor.setDisplayName(result,  displayName);
+            itemStackAccessor.setLoreComp(result, loreList);
+
+            assert result != null;
+            skullMetaAccessor.setTexture(result, Texture);
             _icon = result;
             return result;
         }
         catch (Exception ex) {
-            OpenHeads.logger().error("Failed to get category icon.");
-            OpenHeads.logger().error(ex.getMessage());
-            return GuiUtils.createItem(OpenHeads.Instance,Material.ZOMBIE_HEAD, displayName, loreList);
+            YggraHeads.instance.logger().error("Failed to get category icon.", ex);
+            ItemStack fallback = XMaterial.ZOMBIE_HEAD.parseItem();
+            itemStackAccessor.setDisplayName(fallback, displayName);
+            itemStackAccessor.setLoreComp(fallback, loreList);
+            return fallback;
         }
     }
 }

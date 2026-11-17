@@ -1,7 +1,8 @@
-package io.github.tavstaldev.openheads.utils;
+package io.github.tavstaldev.yggraHeads.utils;
 
-import io.github.tavstaldev.minecorelib.core.PluginLogger;
-import io.github.tavstaldev.openheads.OpenHeads;
+import io.github.tavstaldev.yggraHeads.YggraHeads;
+import io.github.tavstaldev.yggraLib.api.logger.YggraLogger;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,8 +12,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Utility class for handling economy-related operations using Vault.
  */
+@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "UnusedReturnValue"})
 public class EconomyUtils {
-    private static final PluginLogger _logger = OpenHeads.logger().withModule(EconomyUtils.class);
+    private static final YggraLogger _logger = YggraHeads.instance.logger().withModule(EconomyUtils.class);
+    /**
+     * -- GETTER --
+     *  Gets the registered economy provider.
+     *
+     * @return the registered economy provider, or null if none is registered.
+     */
+    @Getter
     private static Economy economy = null;
     private static boolean economyEnabled;
 
@@ -31,15 +40,6 @@ public class EconomyUtils {
         economy = economyProvider.getProvider();
         economyEnabled = true;
         return true;
-    }
-
-    /**
-     * Gets the registered economy provider.
-     *
-     * @return the registered economy provider, or null if none is registered.
-     */
-    public static Economy getEconomy() {
-        return economy;
     }
 
     /**
