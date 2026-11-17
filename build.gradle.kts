@@ -7,40 +7,35 @@ plugins {
     // Apply the Java plugin for building Java projects
     id("java")
     // Apply the Shadow plugin for creating fat JARs
-    id("com.gradleup.shadow") version "8.3.0"
-    // Apply the Run-Paper plugin for running Paper Minecraft servers
-    id("xyz.jpenilla.run-paper") version "2.3.1"
+    id("com.gradleup.shadow") version "8.3.11"
 }
 
-// Define project properties for versions and package name
-val javaVersion: String by project
-val paperApiVersion: String by project
-val hikariCpVersion: String by project
-val mineCoreLibVersion: String by project
-val vaultApiVersion: String by project
-val spiGuiVersion: String by project
-val signGuiVersion: String by project
-val projectPackageName = "${project.group}.openheads"
+val jetbrainsAnnotationsVersion = project.property("jetbrainsAnnotationsVersion") as String
+val lombokVersion = project.property("lombokVersion") as String
+val snakeYamlVersion = project.property("snakeYamlVersion") as String
+val hikariCpVersion = project.property("hikariCpVersion") as String
+val xseriesVersion = project.property("xseriesVersion") as String
+val vaultApiVersion = project.property("vaultApiVersion") as String
+val triumphGuiVersion = project.property("triumphGuiVersion") as String
+val adventureApiVersion = project.property("adventureApiVersion") as String
+val projectPackageName = "${project.group}.yggraHeads"
 
-// Configure Java toolchain and compatibility settings
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(javaVersion)
-        sourceCompatibility = JavaVersion.toVersion(javaVersion)
-        targetCompatibility = JavaVersion.toVersion(javaVersion)
+        languageVersion = JavaLanguageVersion.of(8)
     }
+}
+
+configurations.runtimeClasspath {
+    attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
 }
 
 // Define repositories for dependency resolution
 repositories {
     mavenCentral() // Central Maven repository
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
-    maven {
-        url = uri("https://jitpack.io") // JitPack repository
-    }
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://jitpack.io")
     maven {
         name = "sonatype"
         url = uri("https://oss.sonatype.org/content/groups/public/") // Sonatype repository
@@ -53,21 +48,30 @@ repositories {
 
 // Define project dependencies
 dependencies {
-    // Paper API for Minecraft server development
-    compileOnly("io.papermc.paper:paper-api:${paperApiVersion}")
+    compileOnly("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
 
-    // HikariCP for database connection pooling
-    implementation("com.zaxxer:HikariCP:${hikariCpVersion}")
-    // SignGUI for sign-based input
-    implementation("de.rapha149.signgui:signgui:${signGuiVersion}")
-    // Custom library for core functionality
-    implementation(files("libs/MineCoreLib-${mineCoreLibVersion}.jar"))
-    compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.1")
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
-    // Vault API for economy and permissions integration
+    compileOnly("org.yaml:snakeyaml:${snakeYamlVersion}")
+    compileOnly("com.zaxxer:HikariCP:${hikariCpVersion}")
+    compileOnly("com.github.cryptomorin:XSeries:${xseriesVersion}")
+    //compileOnly("dev.triumphteam:triumph-gui:${triumphGuiVersion}")
+    compileOnly("com.github.lidanthedev.triumph-gui:triumph-gui:${triumphGuiVersion}")
+
+    compileOnly("net.kyori:adventure-api:${adventureApiVersion}")
+    compileOnly("net.kyori:adventure-text-serializer-legacy:${adventureApiVersion}")
+    compileOnly("net.kyori:adventure-text-minimessage:${adventureApiVersion}")
+    compileOnly("net.kyori:adventure-text-serializer-plain:${adventureApiVersion}")
+    compileOnly("net.kyori:adventure-text-serializer-gson:${adventureApiVersion}")
+
     compileOnly("com.github.MilkBowl:VaultAPI:${vaultApiVersion}") {
         exclude(group = "org.bukkit", module = "bukkit") // Exclude Bukkit module
     }
+
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    implementation(files("libs/yggraLib-0.1.0.jar"))
 }
 
 // Disable the default JAR task
@@ -83,10 +87,6 @@ tasks.shadowJar {
     }
 
     exclude("org/slf4j/**")
-
-    // Relocate packages to avoid conflicts
-    relocate("com.zaxxer.hikari", "${projectPackageName}.shadow.hikari")
-    relocate("de.rapha149.signgui", "${projectPackageName}.shadow.signgui")
 }
 
 // Ensure the Shadow JAR task runs during the build process
@@ -96,19 +96,6 @@ tasks.build {
 
 // Configure additional tasks
 tasks {
-    // Configure the RunServer task for running a Paper server
-    named<xyz.jpenilla.runpaper.task.RunServer>("runServer") {
-        minecraftVersion("1.21") // Specify the Minecraft version
-    }
-
-    // Configure Java compilation settings
-    withType<JavaCompile>().configureEach {
-        options.encoding = "UTF-8" // Set the file encoding
-        val javaVersionInt = javaVersion.toInt()
-        if (javaVersionInt >= 10 || JavaVersion.current().isJava10Compatible) {
-            options.release.set(javaVersionInt) // Set the release version for Java
-        }
-    }
 
     // Process resources and expand placeholders in `plugin.yml`
     processResources {
