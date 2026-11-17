@@ -27,8 +27,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+/**
+ * GUI for browsing head categories and navigating to heads, favorites, or search.
+ */
 public class CategoryGUI extends GuiBase {
 
+    /** Unique GUI identifier used with {@link GuiService}. */
     public static String ID = "categories";
     private final GuiService gui;
     private final IChatService chatService;
@@ -36,6 +40,9 @@ public class CategoryGUI extends GuiBase {
     private final IScheduler scheduler;
     private final IHeadsDatabase database;
 
+    /**
+     * Creates and configures the category selection GUI layout and controls.
+     */
     public CategoryGUI() {
         super(ID,
                 YggraHeads.instance,
@@ -130,6 +137,12 @@ public class CategoryGUI extends GuiBase {
         database = YggraHeads.instance.getService(IHeadsDatabase.class);
     }
 
+    /**
+     * Prepares the category GUI for a player and refreshes the displayed content.
+     *
+     * @param player the player opening the GUI
+     * @param args   optional open arguments (unused)
+     */
     @Override
     public void onOpen(@NotNull Player player, Object... args) {
         PlayerCache playerCache = PlayerCacheManager.get(player.getUniqueId());
@@ -146,6 +159,13 @@ public class CategoryGUI extends GuiBase {
         });
     }
 
+    /**
+     * Handles GUI button actions such as pagination, close, favorites, and search.
+     *
+     * @param player the player interacting with the GUI
+     * @param action the configured action identifier
+     * @param event  the inventory click event
+     */
     @Override
     public void executeCommand(Player player, String action, InventoryClickEvent event) {
         switch (action) {
@@ -207,6 +227,12 @@ public class CategoryGUI extends GuiBase {
         }
     }
 
+    /**
+     * Refreshes the category list and page indicator for the current player state.
+     *
+     * @param player the player viewing the GUI
+     * @param menu   the menu instance to update
+     */
     @Override
     public void refresh(@NotNull Player player, @NotNull BaseGui menu) {
         UUID playerId = player.getUniqueId();

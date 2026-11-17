@@ -12,6 +12,9 @@ import io.github.tavstaldev.yggraLib.api.logger.YggraLogger;
 
 import java.util.UUID;
 
+/**
+ * PostgreSQL implementation of the YggraHeads database.
+ */
 public class PostgreDatabase implements IHeadsDatabase {
     private final IYggraPlugin plugin;
     private final HeadsConfiguration config;
@@ -20,6 +23,11 @@ public class PostgreDatabase implements IHeadsDatabase {
 
     private PostgreSqlRepository<UUID, Favorite> _favorites;
 
+    /**
+     * Creates a PostgreSQL database handler.
+     *
+     * @param plugin the plugin instance providing configuration and logging
+     */
     public PostgreDatabase(IYggraPlugin plugin) {
 
         this.plugin = plugin;
@@ -27,6 +35,9 @@ public class PostgreDatabase implements IHeadsDatabase {
         logger = this.plugin.logger().withModule(MySqlDatabase.class);
     }
 
+    /**
+     * Initializes the data source and repositories.
+     */
     @Override
     public void load() {
         String tablePrefix = config.storage.getTablePrefix();
@@ -34,6 +45,9 @@ public class PostgreDatabase implements IHeadsDatabase {
         _favorites = new PostgreSqlRepository<>(plugin, Favorite.class, _dataSource, 60, tablePrefix);
     }
 
+    /**
+     * Closes the database connection pool if it is open.
+     */
     @Override
     public void unload() {
         if (_dataSource != null) {
@@ -42,6 +56,11 @@ public class PostgreDatabase implements IHeadsDatabase {
         }
     }
 
+    /**
+     * Creates and configures the HikariCP data source for PostgreSQL.
+     *
+     * @return the configured data source, or {@code null} if creation fails
+     */
     public HikariDataSource createDataSource() {
         try {
             HikariConfig config = new HikariConfig();
@@ -60,11 +79,15 @@ public class PostgreDatabase implements IHeadsDatabase {
         }
     }
 
+    /**
+     * Ensures the required database schema exists.
+     */
     @Override
     public void checkSchema() {
         _favorites.checkSchema();
     }
 
+    /** {@inheritDoc} */
     @Override
     public IRepository<UUID, Favorite> getFavorites() {
         return _favorites;

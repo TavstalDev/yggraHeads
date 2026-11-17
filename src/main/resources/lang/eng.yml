@@ -32,6 +32,7 @@ commands:
     current: "%prefix% &aYou are using the '&3%version%&a' version of YggraHeads."
     up-to-date: "%prefix% &aYggraHeads is up to date."
     outdated: "%prefix% &cYggraHeads is outdated. You can download it here: &e%link%"
+    exception: "%prefix% &cUnexpected error occurred while checking the version."
   reload:
     desc: "Reloads the plugin config and its messages."
     done: "%prefix% &aThe plugin has been reloaded."

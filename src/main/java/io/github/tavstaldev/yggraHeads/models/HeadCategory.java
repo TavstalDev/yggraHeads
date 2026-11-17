@@ -177,10 +177,13 @@ public class HeadCategory {
     }
 
     /**
-     * Gets the icon representing the head category for the specified player.
+     * Creates or returns the cached icon representing this head category for the specified player.
      *
-     * @param player the player for whom the icon is being retrieved
-     * @return the ItemStack representing the icon
+     * @param player             the player for whom the icon is being created
+     * @param translator         translation service used for localized text
+     * @param itemStackAccessor  item stack accessor used to set display name and lore
+     * @param skullMetaAccessor  skull meta accessor used to apply the category texture
+     * @return the item stack representing the category icon
      */
     public ItemStack getIcon(Player player, ITranslationService translator, IItemStackAccessor itemStackAccessor,
                              ISkullMetaAccessor skullMetaAccessor) {

@@ -22,21 +22,25 @@ import java.util.Objects;
 // Texture:\s*"([^"]*)"\s*"([^"]*)"\s*"([^"]*)"
 
 /**
- * Utility class for handling head categories and YAML configuration.
+ * Utility methods for loading and querying head categories and head data.
  */
 public class HeadUtils {
     private static List<HeadCategory> _headCategories;
+
     /**
-     * Gets the list of head categories.
+     * Returns all loaded head categories.
      *
-     * @return the list of head categories
+     * @return the list of loaded head categories, or {@code null} if not yet loaded
      */
     public static List<HeadCategory> getHeadCategories() {
         return _headCategories;
     }
 
     /**
-     * Loads the head categories from the YAML configuration file.
+     * Loads category definitions and associated head data from plugin resources/files.
+     * <p>
+     * Ensures {@code categories.yml} exists in the plugin data folder, copies bundled head
+     * JSON files on first launch when needed, and populates the in-memory category/head cache.
      */
     public static void load() {
         YggraLogger logger = YggraHeads.instance.logger().withModule(HeadUtils.class);

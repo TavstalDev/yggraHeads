@@ -12,6 +12,9 @@ import io.github.tavstaldev.yggraLib.api.database.repositories.impl.MySqlReposit
 import io.github.tavstaldev.yggraLib.api.logger.YggraLogger;
 import java.util.UUID;
 
+/**
+ * MySQL/MariaDB implementation of the YggraHeads database.
+ */
 public class MySqlDatabase implements IHeadsDatabase {
     private final IYggraPlugin plugin;
     private final HeadsConfiguration config;
@@ -19,6 +22,11 @@ public class MySqlDatabase implements IHeadsDatabase {
     private HikariDataSource dataSource;
     private MySqlRepository<UUID, Favorite> favorites;
 
+    /**
+     * Creates a MySQL/MariaDB database handler.
+     *
+     * @param plugin the plugin instance providing configuration and logging
+     */
     public MySqlDatabase(IYggraPlugin plugin) {
 
         this.plugin = plugin;
@@ -26,6 +34,9 @@ public class MySqlDatabase implements IHeadsDatabase {
         logger = plugin.logger().withModule(MySqlDatabase.class);
     }
     
+    /**
+     * Initializes the data source and repositories.
+     */
     @Override
     public void load() {
         String tablePrefix = this.config.storage.getTablePrefix();
@@ -34,6 +45,9 @@ public class MySqlDatabase implements IHeadsDatabase {
         favorites = new MySqlRepository<>(plugin, Favorite.class, dataSource, isMariaDb, 60, tablePrefix);
     }
     
+    /**
+     * Closes the database connection pool if it is open.
+     */
     @Override
     public void unload() {
         if (dataSource != null) {
@@ -42,16 +56,25 @@ public class MySqlDatabase implements IHeadsDatabase {
         }
     }
 
+    /**
+     * Ensures the required database schema exists.
+     */
     @Override
     public void checkSchema() {
         favorites.checkSchema();
     }
 
+    /** {@inheritDoc} */
     @Override
     public IRepository<UUID, Favorite> getFavorites() {
         return favorites;
     }
 
+    /**
+     * Creates and configures the HikariCP data source for MySQL/MariaDB.
+     *
+     * @return the configured data source, or {@code null} if creation fails
+     */
     public HikariDataSource createDataSource() {
         try {
             HikariConfig config = new HikariConfig();

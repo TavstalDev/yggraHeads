@@ -54,11 +54,16 @@ public class HeadData {
     }
 
     /**
-     * Creates an ItemStack representing the head icon for the player.
+     * Creates an item stack representing this head for display in GUI lists.
      *
-     * @param player the player for whom the icon is being created
-     * @param categoryDisplayNameKey the key for the category display name localization
-     * @return the ItemStack representing the head icon
+     * @param player                 the player viewing the head icon
+     * @param category               category name/key of the head
+     * @param categoryDisplayNameKey localization key for the category display name
+     * @param isFavorite             whether the head is currently favorited by the player
+     * @param translator             translation service used for localized text
+     * @param itemStackAccessor      item stack accessor used to set display name and lore
+     * @param skullMetaAccessor      skull meta accessor used to apply the head texture
+     * @return the item stack representing the head icon
      */
     public ItemStack getIcon(Player player, String category, String categoryDisplayNameKey, boolean isFavorite,
                              ITranslationService translator, IItemStackAccessor itemStackAccessor, ISkullMetaAccessor skullMetaAccessor) {
@@ -105,11 +110,14 @@ public class HeadData {
     }
 
     /**
-     * Creates an ItemStack representing the head item for the player.
+     * Creates an item stack representing this head to be given to the player.
      *
-     * @param player the player for whom the item is being created
-     * @param categoryDisplayNameKey the key for the category display name localization
-     * @return the ItemStack representing the head item
+     * @param player                 the player receiving the head item
+     * @param categoryDisplayNameKey localization key for the category display name
+     * @param translator             translation service used for localized text
+     * @param itemStackAccessor      item stack accessor used to set display name and lore
+     * @param skullMetaAccessor      skull meta accessor used to apply the head texture
+     * @return the item stack representing the head item
      */
     public ItemStack getItem(Player player, String categoryDisplayNameKey, ITranslationService translator,
                              IItemStackAccessor itemStackAccessor, ISkullMetaAccessor skullMetaAccessor) {

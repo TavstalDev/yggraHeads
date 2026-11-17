@@ -24,9 +24,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Main plugin class for YggraHeads.
+ * <p>
+ * Handles plugin lifecycle, service registration (configuration, localization,
+ * economy, cache, database, GUI service), command registration, and reload logic.
+ */
 public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
+    /** Global plugin instance. */
     public static YggraHeads instance;
 
+    /**
+     * Creates a new plugin instance and registers runtime libraries used by the plugin.
+     */
     public YggraHeads() {
         super(27765,
                 new String[]{
@@ -60,6 +70,11 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
         });
     }
 
+    /**
+     * Performs early plugin initialization before the main enable phase.
+     * <p>
+     * Initializes the static instance reference and loads the plugin configuration.
+     */
     @Override
     public void onPrePluginEnable() {
         instance = this;
@@ -67,6 +82,13 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
         _config.load();
     }
 
+    /**
+     * Enables the plugin and initializes core systems.
+     * <p>
+     * This includes version checks, event registration, localization and economy setup,
+     * cache/database initialization, GUI registration, command binding, and optional
+     * update checks.
+     */
     @Override
     public void onPluginEnable() {
         if (!VersionUtils.isAtLeast(1, 8)) {
@@ -201,8 +223,11 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
     }
 
     /**
-     * Called when the plugin is disabled.
+     * Disables the plugin and releases registered resources.
+     * <p>
+     * Unloads the database (if present), closes/unregisters GUIs, and clears GUI caches.
      */
+    @Override
     public void onPluginDisable() {
         IHeadsDatabase database = getService(IHeadsDatabase.class);
         if (database != null)
@@ -221,11 +246,25 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
     }
 
 
+    /**
+     * Returns the public download URL for plugin updates.
+     *
+     * @return the GitHub releases URL for YggraHeads
+     */
     @Override
     public String downloadUrl() {
         return "https://github.com/TavstalDev/yggraHeads/releases";
     }
 
+    /**
+     * Replaces plugin placeholders in a message.
+     * <p>
+     * In addition to base placeholders, this resolves currency placeholders using Vault
+     * when available, falling back to localized currency names.
+     *
+     * @param message the input message containing placeholders
+     * @return the message with placeholders replaced
+     */
     @Override
     public @NotNull String replacePlaceholders(@NotNull String message) {
         String result = super.replacePlaceholders(message);
@@ -247,6 +286,12 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
         return result;
     }
 
+    /**
+     * Reloads plugin runtime state.
+     * <p>
+     * Refreshes localizations and configuration, then closes and re-registers GUIs
+     * so changes take effect without a server restart.
+     */
     public void reload() {
         _logger.info("Reloading YggraHeads...");
         _logger.debug("Reloading localizations...");

@@ -25,18 +25,29 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
 
+/**
+ * Bukkit event listener handling player cache lifecycle and GUI search input flow.
+ */
 @Slf4j
 @SuppressWarnings("unused")
 public class PlayerEventListener implements Listener
 {
     private static final YggraLogger _logger = YggraHeads.instance.logger().withModule(PlayerEventListener.class);
 
+    /**
+     * Registers this listener with the Bukkit plugin manager.
+     */
     public static void init() {
         _logger.debug("Registering event listener...");
         Bukkit.getPluginManager().registerEvents(new PlayerEventListener(), YggraHeads.instance);
         _logger.debug("Event listener registered.");
     }
 
+    /**
+     * Initializes and caches player data on join, including asynchronous loading of favorites.
+     *
+     * @param event the player join event
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -77,12 +88,22 @@ public class PlayerEventListener implements Listener
         });
     }
 
+    /**
+     * Removes cached player data when the player leaves the server.
+     *
+     * @param event the player quit event
+     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerCacheManager.remove(player.getUniqueId());
     }
 
+    /**
+     * Captures chat input for GUI search prompts when a player is awaiting search text.
+     *
+     * @param event the async player chat event
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled())
@@ -117,6 +138,11 @@ public class PlayerEventListener implements Listener
         });
     }
 
+    /**
+     * Blocks command execution while the player is in search input mode to avoid accidental commands.
+     *
+     * @param event the player command preprocess event
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled())
