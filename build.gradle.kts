@@ -2,7 +2,7 @@ plugins {
     // Apply the Java plugin for building Java projects
     id("java")
     // Apply the Shadow plugin for creating fat JARs
-    id("com.gradleup.shadow") version "8.3.11"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 val jetbrainsAnnotationsVersion = project.property("jetbrainsAnnotationsVersion") as String
@@ -47,7 +47,7 @@ dependencies {
     compileOnly("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:26.3-R0.1-SNAPSHOT")
 
     compileOnly("org.yaml:snakeyaml:${snakeYamlVersion}")
     compileOnly("com.zaxxer:HikariCP:${hikariCpVersion}")
