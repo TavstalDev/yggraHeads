@@ -22,7 +22,7 @@
 
 ## Requirements
 
-- **Minecraft server:** Spigot/Paper-compatible server (API version `1.13+`, with compatibility handling for 1.8.8+).
+- **Minecraft server:** PaperMC (and other Spigot/Paper-compatible servers), versions **1.8.8 – 26.x** (compiled against the 1.8.8 API with compatibility handling for newer versions).
 - **Java:** Java 8 runtime/toolchain compatible build target.
 - **Optional dependency:**
   - **[Vault](https://www.spigotmc.org/resources/vault.34315/)** + a Vault-compatible economy plugin (e.g. EssentialsX, CMI) if `general.use-economy` is enabled.
