@@ -1,4 +1,4 @@
-main: io.github.tavstaldev.yggraHeads.YggraHeads
+main: com.github.TavstalDev.yggraHeads.YggraHeads
 version: 1.2.0
 api-version: '1.13'
 

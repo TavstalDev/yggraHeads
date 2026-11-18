@@ -1,8 +1,3 @@
-/**
- * Configures the Gradle build script for the OpenHeads project.
- * This script sets up plugins, repositories, dependencies, and tasks required for building the project.
- */
-
 plugins {
     // Apply the Java plugin for building Java projects
     id("java")
@@ -18,6 +13,7 @@ val xseriesVersion = project.property("xseriesVersion") as String
 val vaultApiVersion = project.property("vaultApiVersion") as String
 val triumphGuiVersion = project.property("triumphGuiVersion") as String
 val adventureApiVersion = project.property("adventureApiVersion") as String
+val yggraLibVersion = project.property("yggraLibVersion") as String
 val projectPackageName = "${project.group}.yggraHeads"
 
 java {
@@ -50,7 +46,7 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
-
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
     compileOnly("org.yaml:snakeyaml:${snakeYamlVersion}")
@@ -69,9 +65,7 @@ dependencies {
         exclude(group = "org.bukkit", module = "bukkit") // Exclude Bukkit module
     }
 
-    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-
-    implementation(files("libs/yggraLib-0.1.0.jar"))
+    implementation("com.github.TavstalDev:yggraLib:v$yggraLibVersion")
 }
 
 // Disable the default JAR task
