@@ -3,7 +3,6 @@ package com.github.TavstalDev.yggraHeads.commands;
 import com.github.TavstalDev.yggraHeads.YggraHeads;
 import com.github.TavstalDev.yggraHeads.gui.CategoryGUI;
 import com.github.TavstalDev.yggraLib.api.localization.ITranslationService;
-import com.github.TavstalDev.yggraLib.api.logger.YggraLogger;
 import com.github.TavstalDev.yggraLib.api.utils.MapUtil;
 import com.github.TavstalDev.yggraLib.bukkit.commands.SubCommand;
 import com.github.TavstalDev.yggraLib.bukkit.gui.GuiService;

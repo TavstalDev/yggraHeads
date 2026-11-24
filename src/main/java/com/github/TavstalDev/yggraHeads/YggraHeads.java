@@ -22,6 +22,7 @@ import com.github.TavstalDev.yggraLib.bukkit.gui.GuiService;
 import com.github.TavstalDev.yggraLib.bukkit.utils.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -76,10 +77,11 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
      * Initializes the static instance reference and loads the plugin configuration.
      */
     @Override
-    public void onPrePluginEnable() {
+    public boolean onPrePluginEnable() {
         instance = this;
         _config = new HeadsConfiguration();
         _config.load();
+        return true;
     }
 
     /**
@@ -229,19 +231,6 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
      */
     @Override
     public void onPluginDisable() {
-        IHeadsDatabase database = getService(IHeadsDatabase.class);
-        if (database != null)
-            database.unload();
-
-        // Unregister GUIs
-        GuiService guiService = getService(GuiService.class);
-        if (guiService != null) {
-            guiService.closeAll();
-            guiService.unregister(CategoryGUI.ID);
-            guiService.unregister(HeadsGUI.ID);
-            guiService.invalidateAllCaches();
-        }
-
         _logger.info("Successfully unloaded.");
     }
 
@@ -253,7 +242,7 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
      */
     @Override
     public String downloadUrl() {
-        return "https://github.com/TavstalDev/yggraHeads/releases";
+        return "https://api.github.com/repos/TavstalDev/yggraHeads/releases/latest";
     }
 
     /**
@@ -293,26 +282,16 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
      * so changes take effect without a server restart.
      */
     public void reload() {
-        _logger.info("Reloading YggraHeads...");
-        _logger.debug("Reloading localizations...");
-        ITranslationService translator = getService(ITranslationService.class);
-        if (translator != null)
-            translator.refresh();
-        _logger.debug("Localizations reloaded.");
-        _logger.debug("Reloading configuration...");
-        _config.load();
-        _logger.debug("Configuration reloaded.");
-
-        // Re-register GUIs
-        GuiService guiService = getService(GuiService.class);
-        if (guiService != null) {
-            guiService.closeAll();
-            guiService.unregister(CategoryGUI.ID);
-            guiService.unregister(HeadsGUI.ID);
-            guiService.invalidateAllCaches();
-
-            guiService.register(new CategoryGUI());
-            guiService.register(new HeadsGUI());
+        if (VersionUtils.isPaper() || VersionUtils.isFolia()) {
+            onPrePluginDisable();
+            onPluginDisable();
+            if (onPrePluginEnable())
+                onPluginEnable();
+            return;
         }
+
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.disablePlugin(this);
+        pluginManager.enablePlugin(this);
     }
 }
