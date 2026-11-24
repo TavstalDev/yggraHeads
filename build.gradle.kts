@@ -1,8 +1,6 @@
 plugins {
-    // Apply the Java plugin for building Java projects
     id("java")
-    // Apply the Shadow plugin for creating fat JARs
-    id("com.gradleup.shadow") version "8.3.11"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 val jetbrainsAnnotationsVersion = project.property("jetbrainsAnnotationsVersion") as String
