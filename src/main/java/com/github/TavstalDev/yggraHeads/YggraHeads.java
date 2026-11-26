@@ -19,6 +19,7 @@ import com.github.TavstalDev.yggraLib.api.localization.ITranslationService;
 import com.github.TavstalDev.yggraLib.bootstrap.YggraPlugin;
 import com.github.TavstalDev.yggraLib.bootstrap.models.LibraryInfo;
 import com.github.TavstalDev.yggraLib.bukkit.gui.GuiService;
+import com.github.TavstalDev.yggraLib.bukkit.gui.IGuiService;
 import com.github.TavstalDev.yggraLib.bukkit.utils.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -40,35 +41,15 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
      */
     public YggraHeads() {
         super(27765,
-                new String[]{
-                "https://oss.sonatype.org/content/groups/public/",
-                "https://repo.codemc.io/repository/maven-public/"
-        }, new LibraryInfo[]{
-            new LibraryInfo(
-                    "com{}zaxxer",
-                    "HikariCP",
-                    "4.0.3",
-                    null
-                    /*"com{}zaxxer",
-                    "io{}github{}}tavstaldev{}yggraHeads{}shadow{}hikari"*/
-            ),
-            new LibraryInfo(
-                    "org{}projectlombok",
-                    "lombok",
-                    "1.18.46",
-                    null
-                    /*"org{}projectlombok",
-                    "io{}github{}}tavstaldev{}yggraHeads{}shadow{}lombok"*/
-            ),
-            new LibraryInfo(
-                    "com{}github{}cryptomorin",
-                    "XSeries",
-                    "14.0.0",
-                    null
-                    /*"com{}github{}cryptomorin",
-                    "io{}github{}}tavstaldev{}yggraHeads{}shadow{}xseries"*/
-            )
-        });
+            new LibraryInfo[]{
+                    new LibraryInfo(
+                            "com{}zaxxer",
+                            "HikariCP",
+                            "4.0.3",
+                            null
+                    )
+            }
+        );
     }
 
     /**
@@ -191,8 +172,8 @@ public class YggraHeads extends YggraPlugin<HeadsConfiguration> {
         _logger.debug("Loading config...");
         HeadUtils.load();
 
-        GuiService guiService = new GuiService(this, cacheService);
-        _serviceCollection.put(GuiService.class, guiService);
+        IGuiService guiService = new GuiService(this, cacheService);
+        _serviceCollection.put(IGuiService.class, guiService);
 
         // Register GUI
         guiService.register(new CategoryGUI());

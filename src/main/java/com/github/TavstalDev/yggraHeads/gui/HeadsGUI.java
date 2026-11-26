@@ -1,6 +1,7 @@
 package com.github.TavstalDev.yggraHeads.gui;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.github.TavstalDev.yggraLib.bukkit.gui.IGuiService;
 import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.GuiItem;
 import com.github.TavstalDev.yggraHeads.YggraHeads;
@@ -39,7 +40,7 @@ public class HeadsGUI extends GuiBase {
 
     /** Unique GUI identifier used with {@link GuiService}. */
     public static String ID = "heads";
-    private final GuiService gui;
+    private final IGuiService gui;
     private final IChatService chatService;
     private final ISkullMetaAccessor skullMetaAccessor;
     private final IScheduler scheduler;
@@ -92,9 +93,9 @@ public class HeadsGUI extends GuiBase {
                     ));
                     // Page button, NOTE: should be updated on refresh
                     add(new GuiButton(
-                            "PAGE",
-                            "{PAGE}",
-                            false,
+                            "CURRENT_PAGE",
+                            "gui.common.current-page",
+                            true,
                             null,
                             false,
                             ListUtil.of("49"),
@@ -112,7 +113,7 @@ public class HeadsGUI extends GuiBase {
                     ));
                 }}
         );
-        gui = YggraHeads.instance.getService(GuiService.class);
+        gui = YggraHeads.instance.getService(IGuiService.class);
         chatService = YggraHeads.instance.getService(IChatService.class);
         skullMetaAccessor = YggraHeads.instance.getService(ISkullMetaAccessor.class);
         scheduler = YggraHeads.instance.getService(IScheduler.class);

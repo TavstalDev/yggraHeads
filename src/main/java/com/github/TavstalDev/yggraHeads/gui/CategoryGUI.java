@@ -1,6 +1,7 @@
 package com.github.TavstalDev.yggraHeads.gui;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.github.TavstalDev.yggraLib.bukkit.gui.IGuiService;
 import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.GuiItem;
 import com.github.TavstalDev.yggraHeads.YggraHeads;
@@ -34,7 +35,7 @@ public class CategoryGUI extends GuiBase {
 
     /** Unique GUI identifier used with {@link GuiService}. */
     public static String ID = "categories";
-    private final GuiService gui;
+    private final IGuiService gui;
     private final IChatService chatService;
     private final ISkullMetaAccessor skullMetaAccessor;
     private final IScheduler scheduler;
@@ -90,9 +91,9 @@ public class CategoryGUI extends GuiBase {
                     ));
                     // Page button, NOTE: should be updated on refresh
                     add(new GuiButton(
-                            "PAGE",
-                            "{PAGE}",
-                            false,
+                            "CURRENT_PAGE",
+                            "gui.common.current-page",
+                            true,
                             null,
                             false,
                             ListUtil.of("49"),
@@ -130,7 +131,7 @@ public class CategoryGUI extends GuiBase {
                     ));
                 }}
         );
-        gui = YggraHeads.instance.getService(GuiService.class);
+        gui = YggraHeads.instance.getService(IGuiService.class);
         chatService = YggraHeads.instance.getService(IChatService.class);
         skullMetaAccessor = YggraHeads.instance.getService(ISkullMetaAccessor.class);
         scheduler = YggraHeads.instance.getService(IScheduler.class);
@@ -239,21 +240,19 @@ public class CategoryGUI extends GuiBase {
         PlayerCache playerCache = PlayerCacheManager.get(player.getUniqueId());
 
         //#region Page Indicator
-        Component pageComp = AdventureUtils.parse(translator.localize(playerId,  "gui.common.page", MapUtil.of(
+        Component pageComp = AdventureUtils.parse(translator.localize(playerId,  "gui.common.current-page", MapUtil.of(
                 "page", String.valueOf(playerCache.getCategoryPage())
         )));
         for (GuiButton btn : buttons) {
-            if (btn.getTitle() == null || !btn.getTitle().equalsIgnoreCase("{PAGE}"))
-                continue;
+            if (Objects.equals(btn.getAction(), "CURRENT_PAGE")) {
+                for (Integer slot : btn.getSlots()) {
+                    GuiItem guiItem = menu.getGuiItem(slot);
+                    if (guiItem == null)
+                        continue;
 
-            for (Integer slot : btn.getSlots()) {
-                GuiItem guiItem = menu.getGuiItem(slot);
-                if (guiItem == null)
-                    continue;
-
-                ItemStack icon = guiItem.getItemStack();
-                itemStackAccessor.setDisplayName(icon, pageComp);
-                guiItem.setItemStack(icon);
+                    ItemStack icon = guiItem.getItemStack();
+                    itemStackAccessor.setDisplayName(icon, pageComp);
+                }
             }
         }
         //#endregion

@@ -82,7 +82,7 @@ gui:
     back: "&cBack"
     previous-page: "&7Previous Page"
     next-page: "&7Next Page"
-    page: "&7Page: &f%page%"
+    current-page: "&7Page: &f%page%"
     search: "&6Search"
     favorites: "&eFavorites"
     free: "&afree"
