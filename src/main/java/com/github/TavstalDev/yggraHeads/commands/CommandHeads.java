@@ -5,7 +5,7 @@ import com.github.TavstalDev.yggraHeads.gui.CategoryGUI;
 import com.github.TavstalDev.yggraLib.api.localization.ITranslationService;
 import com.github.TavstalDev.yggraLib.api.utils.MapUtil;
 import com.github.TavstalDev.yggraLib.bukkit.commands.SubCommand;
-import com.github.TavstalDev.yggraLib.bukkit.gui.GuiService;
+import com.github.TavstalDev.yggraLib.bukkit.gui.IGuiService;
 import com.github.TavstalDev.yggraLib.bukkit.services.IChatService;
 import com.github.TavstalDev.yggraLib.bukkit.utils.AdventureUtils;
 import net.kyori.adventure.text.Component;
@@ -44,7 +44,7 @@ public class CommandHeads implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         IChatService chatService = YggraHeads.instance.getService(IChatService.class);
-        GuiService guiService = YggraHeads.instance.getService(GuiService.class);
+        IGuiService guiService = YggraHeads.instance.getService(IGuiService.class);
         if (chatService == null || guiService == null)
             return false;
 

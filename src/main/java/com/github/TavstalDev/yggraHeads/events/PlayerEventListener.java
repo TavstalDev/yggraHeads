@@ -11,7 +11,7 @@ import com.github.TavstalDev.yggraLib.api.database.QueryCondition;
 import com.github.TavstalDev.yggraLib.api.logger.YggraLogger;
 import com.github.TavstalDev.yggraLib.api.scheduler.IScheduler;
 import com.github.TavstalDev.yggraLib.api.scheduler.YggraTask;
-import com.github.TavstalDev.yggraLib.bukkit.gui.GuiService;
+import com.github.TavstalDev.yggraLib.bukkit.gui.IGuiService;
 import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -128,7 +128,7 @@ public class PlayerEventListener implements Listener
         scheduler.run(new YggraTask() {
             @Override
             public void run() {
-                GuiService guiService = YggraHeads.instance.getService(GuiService.class);
+                IGuiService guiService = YggraHeads.instance.getService(IGuiService.class);
                 if (guiService == null)
                     return;
 
