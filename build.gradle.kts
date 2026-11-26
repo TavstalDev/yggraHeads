@@ -79,6 +79,8 @@ tasks.shadowJar {
     }
 
     exclude("org/slf4j/**")
+
+    relocate("com.github.TavstalDev.yggraLib", "${project.group}.yggraHeads.shadow.yggraLib")
 }
 
 // Ensure the Shadow JAR task runs during the build process
