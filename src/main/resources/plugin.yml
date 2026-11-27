@@ -6,7 +6,7 @@ name: YggraHeads
 prefix: YggraHeads
 authors: [ Tavstal ]
 description: A free and open-source heads menu plugin with GUI support.
-website: https://github.com/TavstalDev/yggraHeads
+website: https://tavstal.eu/
 softdepend: [Vault]
 commands:
   heads:
